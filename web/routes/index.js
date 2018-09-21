@@ -10,6 +10,7 @@ const session = require('express-session');
 const router = express.Router();
 const datamodelds = require('../../datamodels/user');
 const tokenmodels = require('../../datamodels/token');
+const driverroutemodel = require('./../../datamodels/driverrout');
 const token = require('../../config/token');
 
 router.get('/',(req,res)=>{
@@ -133,7 +134,26 @@ router.get('/logout',token.verifytoken,(req,res)=>{
 });
 
 
+router.post('/setdriverroute',token.verifytoken,(req,res)=>{
+  var userdata = req.user;
+  console.log(req.body);
+  const route=new driverroutemodel({
+    startlang:req.body.startlang,
+    startlong:req.body.startlong,
+    endlang:req.body.endlang,
+    endlong:req.body.endlong,
+    drivername:req.user.username,
+  });
+  driverroutemodel.droutesave(route,(err,msg)=>{
+    if(err){
+      res.json({state:false,msg:"route not saved!"});
+    }else{
+      res.json({state:true,msg:"route saved!"});
+    }
+  })
 
+
+});
 
 
 module.exports = router;
